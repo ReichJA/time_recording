@@ -1,0 +1,57 @@
+{% extends 'base2.html' %}
+
+{% block head %}
+<title>Task Master</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">Enter Task</h1>
+
+    <div class="form">
+        <form action="/" method="POST">
+
+            <p>                
+                <label for="project">project</label> 
+                <select name="project">
+                    <option value="{{projects[0].name}}" selected>{{projects[0].name}}</option>
+                    {% for project in projects[1:] %}
+                      <option value="{{project.name}}">{{project.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+
+            <p>
+                <label for="content">content</label>  
+
+                <select name="content">
+                    <option value="{{working_types[0].name}}" selected>{{working_types[0].name}}</option>
+                    {% for working_type in working_types[1:] %}
+                        <option value="{{working_type.name}}">{{working_type.name}}</option>
+                    {% endfor %}
+                </select>
+
+            </p>
+
+            
+            <p>
+                <label for="date_start">date_start</label>  
+                <input type="datetime-local" name="date_start" id="date_start"/>
+            </p>
+
+
+            <p>
+                <label for="date_end">date_end</label>  
+                <input type="datetime-local" name="date_end" id="date_end"/>
+            </p>
+
+            <p>
+                <input type="reset" value="Reset"> 
+                <input type="submit" value="Update">
+            </p>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

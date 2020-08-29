@@ -1,0 +1,44 @@
+body, html {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+.content {
+    margin: 0 auto;
+    width: 900px;
+}
+
+table, td, th {
+    border: 1px solid #aaa;
+}
+
+table {
+    border: 1px solid black;
+    width: 850px;
+}
+
+th,
+td {
+  border: 1px solid blue;
+  width: 100px;
+}
+
+tr,
+td {
+  border: 1px solid blueviolet;
+  width: 100px;
+  text-align: center;
+}
+
+.form {
+   border: 2px solid silver; 
+   padding: 1em; 
+   font-size: 1em; 
+   background-color: lavender;
+   width: 400px;
+
+}
+
+#content {
+    width: 70%;
+}

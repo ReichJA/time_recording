@@ -12,16 +12,20 @@ def date_format():
     date_format = '%Y-%m-%dT%H:%M'
     return date_format
 
-    
+def date_convert(start,end):
+        
+        start_datetime = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M')
+        end_datetime = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M')
 
-start = datetime.datetime.strptime('2020-06-27T22:41', date_format())
-print(start.year)
-print(start.month)
-print(start.day)
+        start_date_string=start_datetime.strftime('%Y-%m-%d')
+        end_date_string=start_datetime.strftime('%Y-%m-%d')
 
-end = datetime.datetime.strptime('2020-06-27T23:41', date_format())
+        diff = calc_datetime_difference(start_datetime, end_datetime)
 
-diff = calc_datetime_difference(start, end)
+        return (start, end,  start_date_string, end_date_string, diff)
 
-print(diff)
 
+temp = date_convert('2000-12-2T08:00','2000-12-2T16:00')
+
+print(temp[1])
+print(type(temp))

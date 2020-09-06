@@ -1,54 +1,9 @@
 from flask import Flask, render_template, url_for, request, redirect
-from flask_sqlalchemy import SQLAlchemy
-import datetime 
+from date_func import calc_datetime_difference, date_convert, date_format
+from database import *
 
-from date_func import calc_datetime_difference, date_format
+import datetime
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///time-clock2.db'
-db = SQLAlchemy(app)
-
-class Project_Work(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    project = db.Column(db.String(200), unique=False, nullable=False)   #Project ID
-    content = db.Column(db.String(200), unique=False, nullable=False)   #what have I been working on?
-    date_start = db.Column(db.String(20), unique=False, nullable=False)   #when did I start my work?
-    date_end = db.Column(db.String(20), unique=False, nullable=False)     #when did I finish my work?
-    time = db.Column(db.Integer, unique=False, nullable=False)            #how long did it take?
-
-    def __repr__(self):
-        return '<Task %r>' % self.id
-
-class Time_Clock(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    date = db.Column(db.Date, unique=False, nullable=False)
-    working_type = db.Column(db.Integer, unique=False, nullable=False)
-    
-    time_diff = db.Column(db.Float, unique=False, nullable=False)
-    overtime = db.Column(db.Float, unique=False, nullable=False)
-
-    def __repr__(self):
-        return '<id %r>' % self.id
-
-class Projects(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.Text, unique=False, nullable=False)
-    time = db.Column(db.Float, unique=False, nullable=False)
-    description = db.Column(db.Text, unique=False, nullable=True)
-
-    def __repr__(self):
-        return '<id %r>' % self.id
-
-class Working_Type(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.Text, unique=False, nullable=False)
-    time = db.Column(db.Float, unique=False, nullable=False)
-
-    def __repr__(self):
-        return '<id %r>' % self.id
 
 @app.route('/form')
 def form():
@@ -67,18 +22,11 @@ def index():
         project = request.form['project']
         content = request.form['content']
 
-        date_start = request.form['date_start']
-        date_end = request.form['date_end']
-        
-        start = datetime.datetime.strptime(date_start, date_format())
-        end = datetime.datetime.strptime(date_end, date_format())
+        start_request_string = request.form['date_start']
+        end_request_string = request.form['date_end']
 
-        # start = datetime.datetime.strptime(request.form['date_end'], '%Y-%m-%dT%H:%M')
-        # end = datetime.datetime.strptime(request.form['date_end'], '%Y-%m-%dT%H:%M')
-
-        diff = calc_datetime_difference(start, end)
-
-        new_task = Project_Work(project=project, content=content, date_start = date_start, date_end = date_end, time = diff)
+        temp = date_convert(start_request_string, end_request_string)
+        new_task = Project_Work(project=project, content=content, date_start = temp[0], date_end = temp[1], date = temp[2], time = temp[4])
 
         try:
             db.session.add(new_task)
@@ -91,6 +39,15 @@ def index():
     else:
         tasks = Project_Work.query
         return render_template('index.html', tasks=tasks)
+
+@app.route('/summary')
+def summary():
+    tasks = Project_Work.query.all()
+    
+    for i in tasks:
+        print (i.content)
+
+    return render_template('summary.html', tasks=tasks)
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -121,12 +78,11 @@ def update(id):
         task.date_start = request.form['date_start']
         task.date_end = request.form['date_end']
 
-        start = datetime.datetime.strptime(task.date_start, date_format())
-        end = datetime.datetime.strptime(task.date_end, date_format())
+        temp = date_convert(request.form['date_start'], request.form['date_end'])
 
-        task.time = calc_datetime_difference(start, end)
+        task.date = temp[2]
+        task.time = temp[4]
         
-
         try:
             db.session.commit()
             return redirect('/')
